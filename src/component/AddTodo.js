@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { Button, TextField } from "@mui/material";
+import { DesktopDatePicker , LocalizationProvider} from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 class AddTodo extends Component {
   // Create a local react state of the this component with both content date property set to nothing.
@@ -7,7 +9,8 @@ class AddTodo extends Component {
     super();
     this.state = {
       content: "",
-      date: ""
+      date: "",
+      duedate: null
     };
   }
   // The handleChange function updates the react state with the new input value provided from the user and the current date/time.
@@ -16,7 +19,7 @@ class AddTodo extends Component {
   handleChange = (event) => {
     this.setState({
       content: event.target.value,
-      date: Date().toLocaleString('en-US')
+      duedate: new Date(event)
     });
   };
   // The handleSubmit function collects the forms input and puts it into the react state.
@@ -29,9 +32,16 @@ class AddTodo extends Component {
       this.props.addTodo(this.state);
       this.setState({
         content: "",
-        date: ""
+        date: "",
+        duedate: null
       });
     }
+  };
+  // handleDueDateChange function for the datepicker to set the value of your due date.
+  handleDueDateChange = (event) => {
+    this.setState({
+      duedate: new Date(event)
+    });
   };
   render() {
     return (
@@ -48,12 +58,23 @@ class AddTodo extends Component {
           variant="outlined"
           onChange={this.handleChange}
           value={this.state.content}
+          data-testid="new-item-input"
         />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>         
+        <DesktopDatePicker
+            id="new-item-date"
+            label="Due Date"
+            value={this.state.duedate}
+            onChange={this.handleDueDateChange}
+            renderInput={(params) => <TextField {...params} />}
+        />
+</LocalizationProvider>
         <Button
           style={{ marginLeft: "10px" }}
           onClick={this.handleSubmit}
           variant="contained"
           color="primary"
+          data-testid="new-item-button"
         >
           Add
         </Button>
